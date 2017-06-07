@@ -106,7 +106,26 @@ BEGIN
 END
 $$
 
-delimiter 
+delimiter ;
+
+-----------------------------------------------------------
+
+delimiter $$
+DROP PROCEDURE IF EXISTS `DBProject`.`check_reader_total_number_of_books` $$
+CREATE PROCEDURE `check_reader_total_number_of_books`(IN readerId bigint unsigned,
+						OUT total_number_of_books int)
+BEGIN 
+DECLARE number_of_borrowed_books INT;
+DECLARE number_of_reserved_books INT;
+SELECT COUNT(*) INTO number_of_borrowed_books FROM borrow_a_book WHERE reader_id = readerID AND status = "ACTIVE" AND return_datetime IS NULL GROUP BY reader_id;
+SELECT COUNT(*) INTO number_of_reserved_books FROM reserve_a_book WHERE reader_id = readerID AND status = "ACTIVE" GROUP BY reader_id;
+
+SET total_number_of_books = number_of_borrowed_books + number_of_reserved_books;
+
+END
+$$
+
+delimiter ;
 
 
 --------------------------------------------------------------------------------------
